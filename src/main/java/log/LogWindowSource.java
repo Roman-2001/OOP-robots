@@ -1,9 +1,7 @@
 package log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -76,14 +74,14 @@ public class LogWindowSource
     
     public int size(){return m_messages.size();}
 
-    public List range(int startFrom, int count)
+    public Iterable<LogEntry> range(int startFrom, int count)
     {
         if (startFrom < 0 || startFrom >= m_messages.size())
         {
             return Collections.emptyList();
         }
         int indexTo = Math.min(startFrom + count, m_messages.size());
-        return Arrays.asList(m_messages.toArray().clone()).subList(startFrom, indexTo);
+        return m_messages;
     }
 
     public Iterable<LogEntry> all()

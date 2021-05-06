@@ -29,7 +29,6 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
         getContentPane().add(panel);
         pack();
         updateLogContent();
-//        logSource.unregisterListener(this);
     }
 
     private void updateLogContent()
@@ -41,6 +40,10 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
         }
         m_logContent.setText(content.toString());
         m_logContent.invalidate();
+    }
+
+    public void dispose(){
+        m_logSource.unregisterListener(this);
     }
     
     @Override
