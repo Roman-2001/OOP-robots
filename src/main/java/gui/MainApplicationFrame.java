@@ -3,8 +3,12 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 import log.Logger;
 
@@ -38,7 +42,21 @@ public class MainApplicationFrame extends JFrame
         addWindow(gameWindow);
 
         setJMenuBar(generateMenuBar());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        close();
+
+    }
+
+    protected void close(){
+        JFrame frame = this;
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+                if (ClosingWindow.confirmExit(frame) == 0){
+                    frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+                }
+            }
+        });
     }
     
     protected LogWindow createLogWindow()
@@ -55,48 +73,18 @@ public class MainApplicationFrame extends JFrame
     protected void addWindow(JInternalFrame frame)
     {
         desktopPane.add(frame);
+        frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        frame.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameClosing(InternalFrameEvent e) {
+                int exitCode = ClosingWindow.confirmExit(frame);
+                if (exitCode == JOptionPane.YES_OPTION){
+                    frame.dispose();
+                }
+            }
+        });
         frame.setVisible(true);
     }
-
-//    protected JMenuBar createMenuBar() {
-//        JMenuBar menuBar = new JMenuBar();
-//
-//        //Set up the lone menu.
-//        JMenu menu = new JMenu("Document");
-//        menu.setMnemonic(KeyEvent.VK_D);
-//        menuBar.add(menu);
-//
-//        //Set up the first menu item.
-//        JMenuItem menuItem = new JMenuItem("New");
-//        menuItem.setMnemonic(KeyEvent.VK_N);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("new");
-////        menuItem.addActionListener((ActionListener) this);
-//        menu.add(menuItem);
-//
-//        //Set up the second menu item.
-//        menuItem = new JMenuItem("Quit");
-//        menuItem.setMnemonic(KeyEvent.VK_Q);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_Q, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("quit");
-////        menuItem.addActionListener((ActionListener) this);
-//        menu.add(menuItem);
-//
-//        return menuBar;
-//    }
-
-//    protected JMenu createAloneMenu(String name, int keyEvent){
-//        JMenu menu = new JMenu("Document");
-//        menu.setMnemonic(KeyEvent.VK_D);
-//        return menu;
-//    }
-//
-//    protected JMenuItem setUpMenuItem(String name, int keyEvent, ActionListener listenerFunction){
-//        JMenuItem menuItem = new JMenuItem();
-//        return menuItem;
-//    }
     
     private JMenuBar generateMenuBar()
     {
@@ -113,8 +101,16 @@ public class MainApplicationFrame extends JFrame
                 Logger.debug("Новая строка");
             });
 
+        Menu exitMenu = new Menu("Выход", KeyEvent.VK_T, "Завершить работу");
+        exitMenu.addMenuItem("Выйти", KeyEvent.VK_S, (event) -> {
+            if (ClosingWindow.confirmExit(menuBar) == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        });
+
         menuBar.add(lookAndFeelMenu.getMenu());
         menuBar.add(testMenu.getMenu());
+        menuBar.add(exitMenu.getMenu());
         return menuBar;
     }
 
