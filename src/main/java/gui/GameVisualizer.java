@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -25,9 +27,9 @@ public class GameVisualizer extends JPanel
         return timer;
     }
     
-    public GameVisualizer(int width, int height)
+    public GameVisualizer()
     {
-        this.robot = new Robot(width, height);
+        this.robot = new Robot();
         this.target = new Target();
         m_timer.schedule(new TimerTask()
         {
@@ -54,9 +56,20 @@ public class GameVisualizer extends JPanel
                 repaint();
             }
         });
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                robot.setSizeField(getWidth(), getHeight());
+                target.comeBackToField(getWidth(), getHeight());
+//                repaint();
+            }
+        });
         setDoubleBuffered(true);
 
     }
+
+
 
     
     protected void onRedrawEvent()

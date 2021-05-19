@@ -12,9 +12,8 @@ public class Robot {
     private int fieldHeight;
     private int fieldWidth;
 
-    Robot(int width, int height){
-        this.fieldHeight = 400;
-        this.fieldWidth = 400;
+    Robot(){
+        setSizeField(400, 400);
     }
 
     public void setSizeField(int width, int height){

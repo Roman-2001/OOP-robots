@@ -46,20 +46,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
 
     public void dispose(){
         m_logSource.unregisterListener(this);
-        if (isVisible()) {
-            setVisible(false);
-        }
-        if (!isClosed) {
-            firePropertyChange(IS_CLOSED_PROPERTY, Boolean.FALSE, Boolean.TRUE);
-            isClosed = true;
-        }
-        fireInternalFrameEvent(InternalFrameEvent.INTERNAL_FRAME_CLOSED);
-        try {
-            java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
-                    new sun.awt.UngrabEvent(this));
-        } catch (SecurityException e) {
-            this.dispatchEvent(new sun.awt.UngrabEvent(this));
-        }
+        super.dispose();
     }
     
     @Override
