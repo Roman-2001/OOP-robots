@@ -1,8 +1,9 @@
 package gui;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Target {
+public class Target implements Serializable {
     private volatile int positionX = 150;
     private volatile int positionY = 100;
 

@@ -62,7 +62,7 @@ public class GameVisualizer extends JPanel
                 super.componentResized(e);
                 robot.setSizeField(getWidth(), getHeight());
                 target.comeBackToField(getWidth(), getHeight());
-//                repaint();
+                repaint();
             }
         });
         setDoubleBuffered(true);

@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Frame;
+import java.io.FileNotFoundException;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -17,7 +18,9 @@ public class RobotsProgram
         e.printStackTrace();
       }
       SwingUtilities.invokeLater(() -> {
-        MainApplicationFrame frame = new MainApplicationFrame();
+        MainApplicationFrame frame = null;
+        frame = new MainApplicationFrame();
+        assert frame != null;
         frame.pack();
         frame.setVisible(true);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);

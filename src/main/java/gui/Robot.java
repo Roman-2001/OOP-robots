@@ -1,7 +1,9 @@
 package gui;
 
 
-public class Robot {
+import java.io.Serializable;
+
+public class Robot implements Serializable {
     private volatile double m_PositionX = 100;
     private volatile double m_PositionY = 100;
     private volatile double m_Direction = 0;
