@@ -24,6 +24,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
         m_logSource.registerListener(this);
         m_logContent = new TextArea("");
         m_logContent.setSize(200, 500);
+        super.setName("log");
         
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);
