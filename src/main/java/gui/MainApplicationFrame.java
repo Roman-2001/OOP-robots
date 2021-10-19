@@ -21,8 +21,7 @@ import log.Logger;
 public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
-    private boolean toRestore = false;
-    
+
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
@@ -33,19 +32,39 @@ public class MainApplicationFrame extends JFrame
             screenSize.height - inset*2);
 
         setContentPane(desktopPane);
-        
-        
+
+
         LogWindow logWindow = createLogWindow();
-        GameWindow gameWindow = new GameWindow();
+        int count = 2;
+        GameWindow gameWindow = new GameWindow(count);
         gameWindow.setSize(400,  400);
-        toRestore = ConfirmWindow.confirmRestore(this) == 0;
 
         addWindow(gameWindow);
         addWindow(logWindow);
 
+        File gameFile = new File(".", gameWindow.getName() + ".bin");
+        File logFile = new File(".", logWindow.getName() + ".bin");
+        if (gameFile.exists() && logFile.exists()) {
+            boolean toRestore = ConfirmWindow.confirmRestore(this) == 0;
+            if (toRestore) {
+                WindowData gameInfo = Saver.deserialize(gameFile);
+                Saver.restoreWindow(gameWindow, gameInfo);
+                WindowData logInfo = Saver.deserialize(logFile);
+                Saver.restoreWindow(logWindow, logInfo);
+            }
+        }
         setJMenuBar(generateMenuBar());
         close();
 
+    }
+
+    private void saveWindows(JDesktopPane desktopPane){
+        for (JInternalFrame window: desktopPane.getAllFrames()) {
+            WindowData windowData = new WindowData(window.getName(),
+                    window.getWidth(), window.getHeight(), window.getX(),
+                    window.getY(), window.isMaximum(), window.isIcon());
+            Saver.serialize(windowData, window.getName() + ".bin");
+        }
     }
 
     protected void close(){
@@ -55,12 +74,7 @@ public class MainApplicationFrame extends JFrame
             public void windowClosing(WindowEvent e) {
                 frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
                 if (ConfirmWindow.confirmExit(frame) == 0){
-                    for (JInternalFrame window: desktopPane.getAllFrames()) {
-                        WindowData windowData = new WindowData(window.getName(),
-                                window.getWidth(), window.getHeight(), window.getX(),
-                                window.getY(), window.isMaximum(), window.isIcon());
-                        Saver.serialize(windowData, window.getName() + ".bin");
-                    }
+                    saveWindows(desktopPane);
                     frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
             }
@@ -81,10 +95,6 @@ public class MainApplicationFrame extends JFrame
     protected void addWindow(JInternalFrame frame)
     {
         String frameName = frame.getName();
-        WindowData restore = Saver.deserialize(new File(".", frameName + ".bin"));
-        if (restore != null && toRestore) {
-            Saver.restoreWindow(frame, restore);
-        }
         desktopPane.add(frame);
         frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         frame.addInternalFrameListener(new InternalFrameAdapter() {
@@ -121,6 +131,7 @@ public class MainApplicationFrame extends JFrame
         Menu exitMenu = new Menu("Выход", KeyEvent.VK_T, "Завершить работу");
         exitMenu.addMenuItem("Выйти", KeyEvent.VK_S, (event) -> {
             if (ConfirmWindow.confirmExit(menuBar) == JOptionPane.YES_OPTION) {
+                saveWindows(desktopPane);
                 System.exit(0);
             }
         });

@@ -5,8 +5,6 @@ import java.beans.PropertyVetoException;
 import java.io.*;
 
 public class Saver {
-    public static final String gameWindowFile = "game.bin";
-    public static final String logWindowFile = "log.bin";
 
 
     public static void serialize(Object info, String name) {
@@ -30,8 +28,6 @@ public class Saver {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

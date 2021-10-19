@@ -1,7 +1,7 @@
 package gui;
 
 
-public class Robot {
+public class Robot implements Runnable{
     private volatile double m_PositionX = 100;
     private volatile double m_PositionY = 100;
     private volatile double m_Direction = 0;
@@ -11,9 +11,14 @@ public class Robot {
 
     private int fieldHeight;
     private int fieldWidth;
+    
+    private double targetPositionX;
+    private double targetPositionY;
+
+    private Thread thread;
 
     Robot(){
-        setSizeField(400, 400);
+        setSizeField((int) (Math.random()*400), (int) (Math.random() * 400));
     }
 
     public void setSizeField(int width, int height){
@@ -32,10 +37,14 @@ public class Robot {
     public double getM_Direction(){
         return m_Direction;
     }
+    
+    public void setTargetPosition(double x, double y){
+        this.targetPositionX = x;
+        this.targetPositionY = y;
+    }
 
     public void updateCoordinates(double velocity, double angularVelocity)
     {
-
         double duration = 10;
         velocity = Calculator.applyLimits(velocity, 0, maxVelocity);
         angularVelocity = Calculator.applyLimits(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
@@ -59,14 +68,17 @@ public class Robot {
         m_Direction = newDirection;
     }
 
-    public void moveTo(double robotX, double robotY, double targetX, double targetY)
+    public void moveTo()
     {
-        double distance = Calculator.distance(targetX, targetY, robotX, robotY);
+        double robotX = getM_PositionX();
+        double robotY = getM_PositionY();
+        double distance = Calculator.distance(targetPositionX, targetPositionY, robotX, robotY);
         if (distance < 0.5)
         {
             return;
         }
-        double angleToTarget = Calculator.angleTo(robotX, robotY, targetX, targetY);
+        double angleToTarget = Calculator.angleTo(robotX, robotY,
+                targetPositionX, targetPositionY);
         double angularVelocity = 0;
         if (angleToTarget > m_Direction)
         {
@@ -77,5 +89,17 @@ public class Robot {
             angularVelocity = -maxAngularVelocity;
         }
         updateCoordinates(maxVelocity, angularVelocity);
+//        System.out.println("go to " + targetPositionX + " " + targetPositionY);
+    }
+
+    @Override
+    public void run() {
+        moveTo();
+//        System.out.println("go to " + targetPositionX + " " + targetPositionY);
+    }
+
+    public void start(){
+        thread = new Thread(this);
+        thread.start();
     }
 }

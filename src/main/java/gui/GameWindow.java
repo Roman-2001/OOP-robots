@@ -7,13 +7,13 @@ import javax.swing.JPanel;
 
 public class GameWindow extends JInternalFrame
 {
-    private GameVisualizer m_visualizer;
+    private final GameVisualizer m_visualizer;
 
-    public GameWindow() 
+    public GameWindow(int count)
     {
         super("Игровое поле", true, true, true, true);
 //        Dimension size = super.getSize();
-        m_visualizer = new GameVisualizer();
+        m_visualizer = new GameVisualizer(count);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer, BorderLayout.CENTER);
         super.setName("game");
@@ -23,7 +23,10 @@ public class GameWindow extends JInternalFrame
 
     @Override
     public void setSize(int width, int height) {
-        m_visualizer.robot.setSizeField(width, height);
+        for (Robot robot: m_visualizer.robots) {
+            robot.setSizeField(width, height);
+        }
+//        m_visualizer.robot.setSizeField(width, height);
         super.setSize(width, height);
     }
 }
